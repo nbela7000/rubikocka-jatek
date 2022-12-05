@@ -1,0 +1,162 @@
+console.clear();
+//noprotect
+
+var title = ['Attention problem | Game', 'Figyelme-baj | Játék', 'Проблема з увагою | Гра', 'Fókusz zavar | Játék'],
+    tLen = title.length,
+    t1 = 0,
+    tSpeed = (1000 * 60 / 4),
+    h1 = document.getElementById('page'),
+    set = document.getElementById('settings'),
+    samp = document.getElementById('sample'),
+    sec = document.getElementById('field'),
+    sampleBase = samp.innerHTML,
+    nfo = document.getElementById('info'),
+    fs = document.getElementById('fullS'),
+    pr = document.getElementById('pro'),
+    min = 0,
+    seconds = 0,
+    highScore = 0,
+    bad = 0,
+    line = document.getElementById('lifeLine'),
+    resotka = 9,
+    hard = document.getElementById('pro2');
+
+function titles() {
+  if (t1 === (tLen - 1)) {
+    t1 = 0;
+  } else {
+    t1++;
+  }
+  document.title = title[t1];
+  h1.textContent = title[t1];
+  window.setTimeout(titles, tSpeed);
+}
+titles();
+
+function generateOptions() {
+  for (var x = 3; x < 33; x++) {
+    var opt = document.createElement('OPTION'),
+        n = document.createTextNode(x);
+    opt.appendChild(n);
+    opt.value = x;
+    set.appendChild(opt);
+  }
+}
+generateOptions();
+
+hard.addEventListener('click', function() {
+  if (this.checked === true) {
+    resotka = 16;
+  } else {
+    resotka = 9;
+  }
+});
+
+function generateContent() {
+  var size;
+  if (set.value < 10) {
+    size = 28;
+  } else if (set.value < 20) {
+    size = 16;
+  } else {
+    size = 13;
+  }
+  sec.innerHTML = '';
+  sample.innerHTML = sampleBase;
+  for (var g = 0; g < set.value; g++) {
+    var div = document.createElement('DIV');
+    div.style.width = 'calc(' + size + 'vw - 10px)';
+    div.style.height = 'calc(' + size + 'vw - 10px)';
+    sec.appendChild(div);
+    for (var i = 0; i < resotka; i++) {
+      var divIn = document.createElement('DIV'),
+          r = (Math.floor(Math.random() * 255)),
+          gr = (Math.floor(Math.random() * 255)),
+          b = (Math.floor(Math.random() * 255));
+      if (resotka == 9) {
+        divIn.style.width = 'calc(100% / 3)';
+        divIn.style.height = 'calc(100% / 3)';
+      } else {
+        divIn.style.width = 'calc(100% / 4)';
+        divIn.style.height = 'calc(100% / 4)';
+      }
+      div.appendChild(divIn);
+      divIn.style.background = 'rgb(' + r + ',' + gr + ',' + b + ')';
+    }
+  }
+  var whichOne = (Math.floor(Math.random() * set.value));
+  samp.innerHTML += sec.children[whichOne].outerHTML;
+  for (var good = 0; good < sec.children.length; good++) {
+    if (good == whichOne) {
+      sec.children[whichOne].addEventListener('click', generateContent);
+      sec.children[whichOne].addEventListener('click', function() {
+        highScore++;
+        nfo.children[1].innerText = 'Score: ' + highScore;
+      });
+    } else {
+        sec.children[good].addEventListener('click', function() {
+        bad++;
+        nfo.children[2].innerText = 'Wrong: ' + bad;
+      });
+    }
+  }
+  return;
+}
+set.addEventListener('click', generateContent);
+
+function count() {
+  if (seconds == 59) {
+    seconds = 0;
+    min++;
+  } else {
+    seconds++;
+  }
+  nfo.children[0].innerText = 'Time: ' + min + ':' + seconds;
+  if (pro.checked === true) {
+    for (var it = 0; it < set.value; it++) {
+      sec.children[it].style.filter = 'grayscale(1)';
+    }
+  } else {
+    for (var it2 = 0; it2 < set.value; it2++) {
+      sec.children[it2].style.filter = 'none';
+    }
+  }
+  line.style.width = (highScore / ((highScore + bad) / 100)) + '%';
+  nfo.children[3].innerText = 'Rate: ' + highScore + '/' + (highScore + bad);
+  return;
+}
+window.setInterval(count, 1000);
+
+fs.addEventListener('click', function(){
+  if (this.checked === true) {
+    document.documentElement.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
+  return;
+});
+
+function url() {
+  'use strict';
+  var link = window.location.href;
+  if (link.includes('runner')) {
+    window.alert('Access Denied ' + up + '\Отключай яваскрипт - вирус!');
+    window.open('','','height=300, width=600, top =' + up + ',left=' + up);
+  }
+  up++;
+  window.setTimeout(url, 1);
+  return;
+}
+url();
+
+function over() {
+  var k = event.key || event.which;
+  if (k === 'F12' || k == 17 || k === 'Control' || k == 123 || k === 'Shift' || k == 16) {
+    location.href.replace('/closekiosk');
+  }
+}
+document.addEventListener('keydown', over);
+
+
+
+
